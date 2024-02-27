@@ -4,7 +4,7 @@ import { Button, Container, Stack, TextField, Typography, Chip } from '@mui/mate
 
 function App() {
 
-  const socket = useMemo(() => io('https://basic-chat-be.vercel.app/'), [])
+  const socket = useMemo(() => io('https://basic-chat-be.vercel.app'), [])
 
   const [message, setMessage] = useState('')
   const [room, setRoom] = useState('')
