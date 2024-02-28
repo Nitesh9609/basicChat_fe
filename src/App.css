@@ -5,18 +5,59 @@
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+.chatBox{
+  height: 400px;
+  width: 100%;
+  overflow: scroll;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+
+
+.chip{
+  width: max-content;
+  max-width: 70%;
+  overflow: visible;
+  text-align: left;
+  padding: 10px;
+  background-color: rgb(190, 249, 189);
+  border: 1px solid rgb(236, 248, 236);
+  border-radius: 5px;
+  margin-top: 5px;
 }
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+
+.chipRight{
+  width: max-content;
+  max-width: 70%;
+  overflow: visible;
+  text-align: left;
+  align-self: flex-end;
+  padding: 10px;
+  background-color: #b9b8b8;
+  border: 1px solid rgb(163, 159, 159);
+  border-radius: 5px;
+  margin-top: 5px;
 }
+.messageBox{
+  padding: 10px;
+  width: 70%;
+  border-radius: 50px;
+  
+}
+
+
+.olineList{
+  display: flex;
+  flex-direction: row;
+  
+}
+
+.onlineUser{
+  font-size: 30px;
+  text-align: left;
+  border-bottom: 0.5px solid rgb(175, 174, 174);
+  cursor: pointer;
+  margin-top: 10px;
+}
+
 
 @keyframes logo-spin {
   from {

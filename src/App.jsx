@@ -1,10 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { io } from "socket.io-client"
 import { Button, Container, Stack, TextField, Typography, Chip } from '@mui/material'
+import './App.css'
+import SendIcon from '@mui/icons-material/Send';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 function App() {
 
-  const socket = useMemo(() => io('https://basic-chat-be.vercel.app'), [])
+  const socket = useMemo(() => io('http://localhost:8080'), [])
 
   const [message, setMessage] = useState('')
   const [room, setRoom] = useState('')
@@ -15,23 +18,23 @@ function App() {
 
   const [activeUsers, setActiveUsers] = useState([])
 
-  
+  const [allMessage, setAllMessage] = useState([])
+
+
+
+
 
   useEffect(() => {
     socket.on('connect', () => {
       setSocketId(socket.id);
-      console.log("Connected to server with id" + socket.id)
+      
     })
     socket.on('user_connected', (data) => { setActiveUsers(data) })
     socket.on("receave-message", (data) => {
-      console.log(data);
-      setMessages((message) => [...message, data.message]);
+         setMessages((prev) => [...prev, data]);
     })
-    console.log("hii");
-    return () => { socket.disconnect() }
+        return () => { socket.disconnect() }
   }, [])
-
-  console.log(activeUsers);
 
   const handleOnCreateRoom = (e) => {
     e.preventDefault()
@@ -41,9 +44,10 @@ function App() {
 
   const handleOnSubmit = (e) => {
     e.preventDefault()
+    setMessages((prev)=> [...prev,{ message, room, userName } ])
     socket.emit('message', { message, room, userName })
-    // setMessage('')
-    console.log({ message, room, userName });
+    setMessage('')
+    
   }
 
   const handleUserName = (e) => {
@@ -51,73 +55,68 @@ function App() {
     socket.emit('userName', userName)
   }
 
-  const handleOnChipClick = (data)=> {
+  const handleOnChipClick = (data) => {
     setRoom(data.socketId)
+
   }
-
-  const uName = activeUsers.filter(data => data.socketId == room)
-
-let mainUser = uName.map(data => data.userName).toString()
-
-console.log(mainUser);
+ 
   return (
-    < div style={{display: 'flex', flexDirection: 'row'}}>
-    <Container maxWidth='sm'>
-      <Typography variant='h3' component='div' gutterBottom>
-        Welcome Chat!
-      </Typography >
-      <Typography variant='h5' component='div' gutterBottom>
-        {
-          userName ? userName : socketId
-        }
-      </Typography>
+    < div style={{ display: 'flex', flexDirection: 'row' }}>
 
-      <form onSubmit={handleUserName}>
-      <TextField value={userName} onChange={(e) => setUserName(e.target.value)} label="User Name" variant='outlined' id='outlined-basic' />
-        <Button type='submit'>Add</Button>
-      </form>
+      <Container maxWidth='sm' >
+        <Typography variant='h3' component='div' gutterBottom>
+          Online Users
+        </Typography>
+        <div className='onlineList'>
+          {
+            activeUsers.map((data, index) => {
+              return <div className='onlineUser' key={index} onClick={() => handleOnChipClick(data)} ><AccountCircleIcon/> {data.userName}</div>
+            })
+          }
+        </div>
+      </Container>
 
-      <br />
-      <form onSubmit={handleOnCreateRoom} >
+
+      <Container maxWidth='sm' style={{ borderLeft: "1px solid black" }}>
+        <Typography variant='h3' component='div' gutterBottom>
+          Welcome to Chat!
+        </Typography >
+
+        <form onSubmit={handleUserName}>
+          <TextField value={userName} onChange={(e) => setUserName(e.target.value)} label="User Name" variant='outlined' id='outlined-basic' />
+          <Button type='submit'>Add</Button>
+        </form>
+
+        <br />
+        {/* <form onSubmit={handleOnCreateRoom} >
         <TextField value={createRoom} onChange={(e) => setCreateRoom(e.target.value)} label="Room Name" variant='outlined' id='outlined-basic' />
         <Button type='submit' >Join</Button>
-      </form>
+      </form> */}
 
-      <br />
+        <br />
 
-      <form onSubmit={handleOnSubmit}>
-        <TextField value={message} onChange={(e) => setMessage(e.target.value)} label="Message" variant='outlined' id='outlined-basic' />
-        <TextField value={mainUser} onChange={(e) => setRoom(e.target.value)} label="User" variant='outlined' id='outlined-basic' />
+        <form onSubmit={handleOnSubmit}>
+          <div className='chatBox'>
+            <Stack>
+              {
+                messages.map((m, id) => {
+                  return <div key={id} className={m.userName == userName ? 'chipRight' : 'chip'} >{m.message}</div>
 
-        <Button type='submit' >Send</Button>
-      </form>
+                })
+              }
+            </Stack>
+          </div>
+          <input value={message} className='messageBox' type="text" onChange={(e) => setMessage(e.target.value)} />
+          <Button type='submit' ><SendIcon /></Button>
+        </form>
 
-      <Stack>
-        {
-          messages.map((m, id) => {
-            return <Typography key={id} variant='h6' component='div' gutterBottom>
-              {m}
-            </Typography>
-          })
-        }
-      </Stack>
 
-    </Container>
 
-    <Container maxWidth='sm'>
-    <Typography variant='h3' component='div' gutterBottom>
-        Online Users
-      </Typography>
-      <Typography variant='h6' component='div' gutterBottom>
-      {
-        activeUsers.map((data, index) => {
-          return  <Chip key={index} label={data.userName} onClick = { () => handleOnChipClick(data) } />
-        })
-      }
-      </Typography>
-    </Container>
+      </Container>
+
+
     </ div>
-    
+
   )
 }
 
