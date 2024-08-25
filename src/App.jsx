@@ -7,7 +7,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 function App() {
 
-  const socket = useMemo(() => io('http://localhost:8080'), [])
+  const socket = useMemo(() => io('https://5ab2-2405-201-4042-f80c-1161-122b-bf3e-ee4d.ngrok-free.app'), [])
 
   const [message, setMessage] = useState('')
   const [room, setRoom] = useState('')
